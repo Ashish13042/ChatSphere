@@ -1,0 +1,1 @@
+export const APIURL = "https://9jwrrltp-3000.inc1.devtunnels.ms/api";

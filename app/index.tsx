@@ -1,39 +1,102 @@
-import GlobalApi from "@/services/GlobalApi";
-import { useLogto } from "@logto/rn";
-import { Redirect } from "expo-router";
-import { useEffect } from "react";
-import { Text, View } from "react-native";
-
-export default function Index() {
-  const { getIdTokenClaims, isAuthenticated } = useLogto();
-  useEffect(() => {
-    if (isAuthenticated) {
-      getIdTokenClaims().then(async(userData) => {
-        console.log("--",userData)
-        if(userData?.email){
-          const result=await GlobalApi.GetUserByEmail(userData?.email); 
-          console.log(result.data.data);//to get starpi data in response
-          //Insert new record
-          const data={
-            email:userData.email,
-            name:userData.name,
-            picture:userData.picture
-          }
-          const resp=await GlobalApi.CreateNewUser(data);
-          console.log(resp.data);
-        }
-      });
-    } 
-  }, [isAuthenticated]);
+import { View, Text, Image, StyleSheet, TouchableOpacity, Button } from 'react-native'
+import React from 'react'
+import {Marquee} from '@animatereactnative/marquee'
+import {GestureHandlerRootView} from 'react-native-gesture-handler'
+import Colors from '@/services/Colors'
+import { useRouter } from 'expo-router'
+export default function Landing() {
+  const router=useRouter()
+    const imageList=[
+        require('./../assets/images/1.1.jpg'),
+        require('./../assets/images/2.1.jpg'),
+        require('./../assets/images/3.1.jpg'),
+        require('./../assets/images/4.1.jpg'),
+        require('./../assets/images/5.1.jpg'),
+        require('./../assets/images/6.1.jpg'),
+    ]
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      {/*<Redirect href={"/Landing"}/>*/}
+    <GestureHandlerRootView>
+    <View>
+     <Marquee spacing={10} speed={0.7}
+     style={{
+        transform:[{rotate:'-4deg'}]
+     }}>
+      <View style={styles.imageContainer}>
+        {imageList.map((image,index)=>(
+            <Image source={image} style={styles.image}/>
+        ))}
+      </View>
+      </Marquee>
+      <Marquee spacing={10} speed={0.4}
+     style={{
+        transform:[{rotate:'-4deg'}],
+        marginTop:10
+     }}>
+      <View style={styles.imageContainer}>
+        {imageList.map((image,index)=>(
+            <Image source={image} style={styles.image}/>
+        ))}
+      </View>
+      </Marquee>
+      <Marquee spacing={10} speed={0.5}
+     style={{
+        transform:[{rotate:'-4deg'}],
+        marginTop:10
+     }}>
+      <View style={styles.imageContainer}>
+        {imageList.map((image,index)=>(
+            <Image source={image} style={styles.image}/>
+        ))}
+      </View>
+      </Marquee>
     </View>
-  );
+    <View style={{
+        backgroundColor: Colors.WHITE,
+        height: '100%',
+        padding:20
+    }}>
+        <Text style={{
+            fontFamily:'Outfit-ExtraBold',
+            fontSize:25,
+            textAlign:'center'
+        }}>💬 ChatSphere | Connect, Chat & Stay Connected Anytime!
+        </Text>
+        <Text style={{
+            fontFamily:'Outcook-ExtraBold',
+            textAlign:'center',
+            color:Colors.GRAY,
+            marginBottom:20
+        }}>💬 Instant Chats, Endless Connections! 🚀
+        </Text>
+        <TouchableOpacity 
+        onPress={ () => router.push("/auth/signin")}
+        style={styles.button}>              
+            <Text style={{
+                textAlign:'center',
+                color:Colors.WHITE,
+                fontSize:17,
+                fontFamily:'Outfit'
+            }}>Get Started</Text>
+        </TouchableOpacity>
+
+    </View>
+    </GestureHandlerRootView>
+  )
 }
+const styles = StyleSheet.create({
+    image:{
+        width:160,
+        height:160,
+        borderRadius:25
+    },
+    imageContainer:{
+        display:'flex',
+        flexDirection:'row',
+        gap: 10
+    },
+    button:{
+        backgroundColor:Colors.PRIMARY,
+        padding:13,
+        borderRadius:15,
+    }
+})
