@@ -1,9 +1,10 @@
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ImageBackground } from "react-native";
 import React, { useState } from "react";
 import axios from "axios";
 import { useRouter } from "expo-router";
 import { saveLocalItem } from "@/services/secureStorage";
 import { APIURL } from "@/services/APIURL";
+
 const SignInScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -11,56 +12,72 @@ const SignInScreen = () => {
 
   const handleSignIn = async () => {
     try {
-      const response = await axios.post(APIURL+"/users/signin", { email, password }); /**/
+      const response = await axios.post(APIURL + "/users/signin", { email, password });
 
       if (response.data.token) {
-        // Store token securely
         saveLocalItem("userToken", response.data.token);
         Alert.alert("Success", "Signin successful!");
-        router.push("/home"); 
+        router.push("/home");
       } else {
         Alert.alert("Error", "Invalid response from server.");
       }
     } catch (error) {
-      Alert.alert("Error", error.response?.data?.message || "Signin failed."); 
+      Alert.alert("Error", error.response?.data?.message || "Signin failed.");
     }
   };
 
   return (
-    
-    <View style={styles.container}>
-      <Text style={styles.title}>Sign In</Text>
-      <TextInput placeholder="Email" style={styles.input} onChangeText={setEmail} keyboardType="email-address" />
-      <TextInput placeholder="Password" style={styles.input} onChangeText={setPassword} secureTextEntry />
-      <TouchableOpacity style={styles.button} onPress={handleSignIn}>
-        <Text style={styles.buttonText}>Sign In</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push("/auth/signup")}> 
-        <Text style={styles.link}>Don't have an account? Sign Up</Text>
-      </TouchableOpacity>
-    </View>
-   
+    <ImageBackground 
+      source={require("../../../assets/images/bg.jpg")}  // Ensure the path is correct
+      style={styles.background} 
+      resizeMode="cover"
+    >
+      <View style={styles.overlay}> 
+        <Text style={styles.title}>Sign In</Text>
+        <TextInput placeholder="Email" style={styles.input} onChangeText={setEmail} keyboardType="email-address" />
+        <TextInput placeholder="Password" style={styles.input} onChangeText={setPassword} secureTextEntry />
+        <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+          <Text style={styles.buttonText}>Sign In</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push("/auth/signup")}>
+          <Text style={styles.link}>Don't have an account? Sign Up</Text>
+        </TouchableOpacity>
+      </View>
+    </ImageBackground>
   );
 };
 
 export default SignInScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#fff" },
-  title: { fontSize: 28, color: "green", marginBottom: 20 },
+  background: {
+    flex: 1, 
+    justifyContent: "center", 
+    alignItems: "center",
+    width: "100%",
+    height: "100%",
+  },
+  overlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.3)", // Semi-transparent white overlay
+    width: "100%",
+    height: "100%",
+  },
+  title: { fontSize: 28,fontWeight:"bold", color: "rgb(17, 87, 51)", marginBottom: 20 },
   input: { 
     width: "80%", 
     height: 50, 
     backgroundColor: "white",
-    borderColor: "black", // Set border color
-    borderStyle: "solid",
+    borderColor: "black", 
     borderWidth: 2,
     borderRadius: 10, 
     paddingHorizontal: 15, 
     marginBottom: 15, 
-    color: "black" // Change text color to black
+    color: "black"
   },
   button: { width: "80%", backgroundColor: "green", padding: 15, borderRadius: 10, alignItems: "center" },
   buttonText: { color: "white", fontSize: 18 },
-  link: { color: "green", marginTop: 15 },
+  link: { color: "rgb(5, 50, 27)", marginTop: 15 },
 });

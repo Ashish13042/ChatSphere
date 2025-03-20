@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Cookwithme",
-    "slug": "Cookwithme",
+    "name": "ChatSphere",
+    "slug": "ChatSphere",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "Cookwithme",
+    "scheme": "ChatSphere",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
