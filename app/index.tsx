@@ -1,11 +1,45 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, Button } from 'react-native'
-import React from 'react'
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native'
+import React, { useEffect } from 'react'
 import {Marquee} from '@animatereactnative/marquee'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import Colors from '@/services/Colors'
 import { useRouter } from 'expo-router'
+import * as SplashScreen from 'expo-splash-screen'; 
+import {useFonts, Poppins_700Bold, Poppins_700Bold_Italic, Poppins_400Regular, Poppins_500Medium, Poppins_200ExtraLight} from "@expo-google-fonts/poppins"
+import { getLocalItem } from '@/services/secureStorage'
+
+
+SplashScreen.preventAutoHideAsync();
+
 export default function Landing() {
   const router=useRouter()
+  
+  const [fontsLoaded, error] = useFonts({
+    Poppins_700Bold,
+    Poppins_200ExtraLight,
+    Poppins_400Regular,
+    Poppins_700Bold_Italic,
+    Poppins_500Medium
+  });  
+
+  useEffect(() => { 
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+    useEffect(() => {
+        const checkUser = async () => {
+            const user = await getLocalItem('userToken')
+            if (user) {
+                router.push('/home')
+            }
+        }
+        checkUser()
+    }
+    , []);
+
+
     const imageList=[
         require('./../assets/images/1.1.jpg'),
         require('./../assets/images/2.1.jpg'),
@@ -14,6 +48,7 @@ export default function Landing() {
         require('./../assets/images/5.1.jpg'),
         require('./../assets/images/6.1.jpg'),
     ]
+    
   return (
     <GestureHandlerRootView>
     <View>

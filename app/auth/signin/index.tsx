@@ -6,20 +6,23 @@ import { saveLocalItem } from "@/services/secureStorage";
 import { APIURL } from "@/services/APIURL";
 
 const SignInScreen = () => {
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState(""); // for email or phone
   const [password, setPassword] = useState("");
   const router = useRouter();
 
   const handleSignIn = async () => {
     try {
-      const response = await axios.post(APIURL + "/users/signin", { email, password });
+      const response = await axios.post(APIURL + "/users/signin", {
+        identifier,  // this can be email or phone
+        password,
+      });
 
       if (response.data.token) {
         saveLocalItem("userToken", response.data.token);
         Alert.alert("Success", "Signin successful!");
-        router.push("/home");
+        router.replace("/home");
       } else {
-        Alert.alert("Error", "Invalid response from server.");
+        Alert.alert("Error", "Invalid response from server."); 
       }
     } catch (error) {
       Alert.alert("Error", error.response?.data?.message || "Signin failed.");
@@ -28,14 +31,24 @@ const SignInScreen = () => {
 
   return (
     <ImageBackground 
-      source={require("../../../assets/images/bg.jpg")}  // Ensure the path is correct
+      source={require("../../../assets/images/bg.jpg")}
       style={styles.background} 
       resizeMode="cover"
     >
       <View style={styles.overlay}> 
         <Text style={styles.title}>Sign In</Text>
-        <TextInput placeholder="Email" style={styles.input} onChangeText={setEmail} keyboardType="email-address" />
-        <TextInput placeholder="Password" style={styles.input} onChangeText={setPassword} secureTextEntry />
+        <TextInput 
+          placeholder="Email or Phone Number" 
+          style={styles.input} 
+          onChangeText={setIdentifier} 
+          keyboardType="default" 
+        />
+        <TextInput 
+          placeholder="Password" 
+          style={styles.input} 
+          onChangeText={setPassword} 
+          secureTextEntry 
+        />
         <TouchableOpacity style={styles.button} onPress={handleSignIn}>
           <Text style={styles.buttonText}>Sign In</Text>
         </TouchableOpacity>
@@ -48,6 +61,7 @@ const SignInScreen = () => {
 };
 
 export default SignInScreen;
+
 
 const styles = StyleSheet.create({
   background: {
