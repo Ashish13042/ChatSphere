@@ -28,16 +28,7 @@ export default function Landing() {
     }
   }, [fontsLoaded]);
 
-    useEffect(() => {
-        const checkUser = async () => {
-            const user = await getLocalItem('userToken')
-            if (user) {
-                router.push('/home')
-            }
-        }
-        checkUser()
-    }
-    , []);
+   
 
 
     const imageList=[

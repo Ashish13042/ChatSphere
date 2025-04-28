@@ -1,10 +1,9 @@
 // HomeScreen.js
 import React, { useState, useRef } from "react";
-import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, Animated, Dimensions } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, Animated, Dimensions, Modal } from "react-native";
+import { Ionicons, Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
-import {Modal} from 'react-native';
 
 const { width } = Dimensions.get("window");
 
@@ -23,6 +22,8 @@ const chats = [
 const HomeScreen = () => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
+  const [selectedProfileImage, setSelectedProfileImage] = useState(null);
   const slideAnim = useRef(new Animated.Value(-width * 0.7)).current;
 
   const toggleMenu = () => {
@@ -43,73 +44,105 @@ const HomeScreen = () => {
   };
 
   return (
-    <LinearGradient colors={["#0f2027", "#203a43", "#2c5364"]} style={styles.container}>
-
+    <View style={styles.container}>
+      
       {/* Sidebar */}
-{menuVisible && (
-  <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={toggleMenu} />
-)}
-<Animated.View style={[styles.sidebar, { transform: [{ translateX: slideAnim }] }]}>
-  <View style={styles.sidebarContent}>
-    <Image
-      source={require('../../assets/images/logo.png')}
-      style={styles.logo}
-    />
-    <View style={styles.menuItems}>
-      <TouchableOpacity><Text style={styles.menuText}>Home</Text></TouchableOpacity>
-      <TouchableOpacity><Text style={styles.menuText}>Profile</Text></TouchableOpacity>
-      <TouchableOpacity><Text style={styles.menuText}>Settings</Text></TouchableOpacity>
-      <TouchableOpacity><Text style={styles.menuText}>Logout</Text></TouchableOpacity>
-    </View>
-    <View style={styles.profileSection}>
-      <TouchableOpacity onPress={() => setModalVisible(true)}>
-      <Image
-        source={require('../../assets/images/Profilesample.png')}
-        style={styles.profilePic}
-      />
-      </TouchableOpacity>
-      <Text style={styles.profileName}>Shefali</Text>
-    </View>
-    {/* Modal for Profile Picture */}
-    <Modal visible={modalVisible} transparent animationType="fade">
-      <View style={styles.modalContainer}>
-        <TouchableOpacity style={styles.modalBackground} onPress={() => setModalVisible(false)} >
-          <Image source = {require('../../assets/images/Profilesample.png')}
-          style={styles.modalImage} />
-        </TouchableOpacity>
-      </View>
-    </Modal>
+      {menuVisible && (
+        <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={toggleMenu} />
+      )}
+      <Animated.View style={[styles.sidebar, { transform: [{ translateX: slideAnim }] }]}>
+        <LinearGradient colors={["#ffffff", "#e6f2ff"]} style={styles.sidebarContent}>
+          <View style={styles.header}>
+            <Image
+              source={require('../../assets/images/logo.png')}
+              style={styles.logo}
+            />
+            <Text style={styles.appName}>ChatSphere</Text>
+          </View>
 
-  </View>
-</Animated.View>
+          <View style={styles.menu}>
+            <TouchableOpacity style={styles.menuItem}>
+              <Ionicons name="home-outline" size={24} color="#3498db" />
+              <Text style={styles.menuText}>Home</Text>
+            </TouchableOpacity>
 
+            <TouchableOpacity style={styles.menuItem}>
+              <Ionicons name="person-outline" size={24} color="#3498db" />
+              <Text style={styles.menuText}>Profile</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem}>
+              <Feather name="settings" size={24} color="#3498db" />
+              <Text style={styles.menuText}>Settings</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem}>
+              <Ionicons name="log-out-outline" size={24} color="#3498db" />
+              <Text style={styles.menuText}>Logout</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.profileSection}>
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
+              <Image
+                source={require('../../assets/images/Profilesample.png')}
+                style={styles.profilePic}
+              />
+            </TouchableOpacity>
+            <Text style={styles.profileName}>Shefali</Text>
+          </View>
+
+          {/* Sidebar Profile Modal */}
+          <Modal visible={modalVisible} transparent animationType="fade">
+            <View style={styles.modalContainer}>
+              <TouchableOpacity style={styles.modalBackground} onPress={() => setModalVisible(false)}>
+                <Image
+                  source={require('../../assets/images/Profilesample.png')}
+                  style={styles.modalImage}
+                />
+              </TouchableOpacity>
+            </View>
+          </Modal>
+        </LinearGradient>
+      </Animated.View>
 
       {/* Header */}
-      <View style={styles.header}>
+      <View style={styles.topHeader}>
         <TouchableOpacity onPress={toggleMenu}>
-          <Ionicons name="menu" size={35} color="white" />
+          <Ionicons name="menu" size={35} color="#3498db" />
         </TouchableOpacity>
         <Text style={styles.headerText}>ChatSphere</Text>
         <TouchableOpacity>
-          <Ionicons name="ellipsis-vertical" size={25} color="white" />
+          <Ionicons name="ellipsis-vertical" size={25} color="#3498db" />
         </TouchableOpacity>
       </View>
 
       {/* Chat List */}
-      <FlatList
+      <FlatList showsVerticalScrollIndicator={false}
+
         contentContainerStyle={{ padding: 10 }}
         data={chats}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <BlurView intensity={50} tint="dark" style={styles.chatItem}>
-            <TouchableOpacity style={styles.chatRow}>
-              <Ionicons name="person-circle" size={50} color="#00e676" />
+          <BlurView intensity={50} tint="light" style={styles.chatItem}>
+            <View style={styles.chatRow}>
+              <TouchableOpacity
+                onPress={() => {
+                  setSelectedProfileImage(require('../../assets/images/Profilesample.png'));
+                  setProfileModalVisible(true);
+                }}
+              >
+                <Image
+                  source={require('../../assets/images/Profilesample.png')}
+                  style={{ width: 50, height: 50, borderRadius: 25 }}
+                />
+              </TouchableOpacity>
               <View style={styles.chatInfo}>
                 <Text style={styles.chatName}>{item.name}</Text>
                 <Text style={styles.chatMessage}>{item.message}</Text>
               </View>
               <Text style={styles.chatTime}>{item.time}</Text>
-            </TouchableOpacity>
+            </View>
           </BlurView>
         )}
       />
@@ -119,15 +152,34 @@ const HomeScreen = () => {
         <Ionicons name="chatbubble" size={30} color="white" />
       </TouchableOpacity>
 
-    </LinearGradient>
+      {/* Profile Picture Modal */}
+      <Modal visible={profileModalVisible} transparent animationType="fade">
+        <View style={styles.modalContainer}>
+          <TouchableOpacity
+            style={styles.modalBackground}
+            activeOpacity={1}
+            onPress={() => setProfileModalVisible(false)}
+          >
+            {selectedProfileImage && (
+              <Image
+                source={selectedProfileImage}
+                style={styles.modalImage}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
+      </Modal>
+
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#f2f6fc",
   },
-  header: {
+  topHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -137,62 +189,88 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#138d75",
+    color: "#3498db",
   },
   sidebar: {
     position: "absolute",
     top: 0,
     bottom: 0,
     width: width * 0.7,
-    backgroundColor: "#1a1a1a",
     zIndex: 2,
-    paddingVertical: 40,
-    paddingHorizontal: 20,
+    borderTopRightRadius: 30,
+    borderBottomRightRadius: 30,
+    overflow: "hidden",
   },
   sidebarContent: {
     flex: 1,
-    justifyContent: "space-between",
+    paddingVertical: 60,
+    paddingHorizontal: 20,
+  },
+  header: {
+    alignItems: "center",
+    marginBottom: 30,
   },
   logo: {
     width: 100,
     height: 100,
-    borderRadius: 20,
-    alignSelf: "center",
-    marginBottom: 30,
+    resizeMode: "contain",
+    marginBottom: 10,
   },
-  menuItems: {
-    gap: 20,
+  appName: {
+    color: "#3498db",
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  menu: {
+    flex: 1,
+    marginTop: 20,
+  },
+  menuItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 15,
   },
   menuText: {
+    color: "#3498db",
     fontSize: 18,
-    color: "#138d75",
-    fontWeight: "600",
+    marginLeft: 20,
+    fontWeight: "bold",
   },
   profileSection: {
     alignItems: "center",
+    marginBottom: 20,
   },
   profilePic: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     marginBottom: 10,
   },
   profileName: {
-    color: "#138d75",
-    fontSize: 16,
+    color: "#3498db",
+    fontSize: 18,
     fontWeight: "bold",
   },
   chatItem: {
-    borderRadius: 50,
+    borderRadius: 20,
     marginVertical: 8,
+    backgroundColor: "#ffffff", // Light background
+    shadowColor: "#3498db",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 5, // for Android
     overflow: "hidden",
   },
+  
   chatRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(12, 150, 104, 0.26)",
     padding: 15,
-    borderRadius: 30,
+    borderRadius: 50,
   },
   chatInfo: {
     flex: 1,
@@ -201,20 +279,20 @@ const styles = StyleSheet.create({
   chatName: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#138d75",
+    color: "#34495e",
   },
   chatMessage: {
-    color: "#80cbc4",
+    color: "#7f8c8d",
   },
   chatTime: {
-    color: "#4db6ac",
+    color: "#95a5a6",
     fontSize: 12,
   },
   newChatButton: {
     position: "absolute",
     bottom: 20,
     right: 20,
-    backgroundColor: "#138d75",
+    backgroundColor: "#3498db",
     padding: 20,
     borderRadius: 27,
     alignItems: "center",
@@ -245,7 +323,7 @@ const styles = StyleSheet.create({
     left: 0,
     width: width,
     height: "100%",
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0,0,0,0.2)",
     zIndex: 1,
   },
 });

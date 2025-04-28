@@ -1,19 +1,39 @@
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ImageBackground } from "react-native";
-import React, { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "expo-router";
-import { saveLocalItem } from "@/services/secureStorage";
+import { deleteLocalItem, getLocalItem, saveLocalItem } from "@/services/secureStorage";
 import { APIURL } from "@/services/APIURL";
+import axiosInstance from "@/services/GlobalApi";
 
 const SignInScreen = () => {
-  const [identifier, setIdentifier] = useState(""); // for email or phone
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
+  useEffect(() => {
+    const checkUser = async () => {
+      const token = await getLocalItem("userToken");
+      if (token) {
+        const response = await axiosInstance({
+          method: "post",
+          url: "/auth/check-auth",
+        });
+        if (response.status === 200) {
+          router.push("/home");
+        } else {
+          deleteLocalItem("userToken");
+          router.push("/auth/signin");
+        }
+      }
+    };
+    checkUser();
+  }, []);
+  
   const handleSignIn = async () => {
     try {
-      const response = await axios.post(APIURL + "/users/signin", {
-        identifier,  // this can be email or phone
+      const response = await axios.post(APIURL + "/auth/signin", {
+        identifier,
         password,
       });
 
@@ -22,76 +42,88 @@ const SignInScreen = () => {
         Alert.alert("Success", "Signin successful!");
         router.replace("/home");
       } else {
-        Alert.alert("Error", "Invalid response from server."); 
+        Alert.alert("Error", "Invalid response from server.");
       }
     } catch (error) {
-      Alert.alert("Error", error.response?.data?.message || "Signin failed.");
+      const err = error as any;
+      Alert.alert("Error", err.response?.data?.message || "Signin failed.");
     }
   };
 
   return (
-    <ImageBackground 
-      source={require("../../../assets/images/bg.jpg")}
-      style={styles.background} 
-      resizeMode="cover"
-    >
-      <View style={styles.overlay}> 
-        <Text style={styles.title}>Sign In</Text>
-        <TextInput 
-          placeholder="Email or Phone Number" 
-          style={styles.input} 
-          onChangeText={setIdentifier} 
-          keyboardType="default" 
-        />
-        <TextInput 
-          placeholder="Password" 
-          style={styles.input} 
-          onChangeText={setPassword} 
-          secureTextEntry 
-        />
-        <TouchableOpacity style={styles.button} onPress={handleSignIn}>
-          <Text style={styles.buttonText}>Sign In</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/auth/signup")}>
-          <Text style={styles.link}>Don't have an account? Sign Up</Text>
-        </TouchableOpacity>
-      </View>
-    </ImageBackground>
+    <View style={styles.container}>
+      <Text style={styles.title}>Sign In</Text>
+
+      <TextInput 
+        placeholder="Email or Phone Number" 
+        placeholderTextColor="#1c2833"
+        style={styles.input}
+        onChangeText={setIdentifier}
+        keyboardType="default"
+      />
+      <TextInput 
+        placeholder="Password" 
+        placeholderTextColor="#1c2833"
+        style={styles.input}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
+
+      <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+        <Text style={styles.buttonText}>Sign In</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => router.push("/auth/signup")}>
+        <Text style={styles.link}>Don't have an account? Sign Up</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 export default SignInScreen;
-
-
 const styles = StyleSheet.create({
-  background: {
-    flex: 1, 
-    justifyContent: "center", 
-    alignItems: "center",
-    width: "100%",
-    height: "100%",
-  },
-  overlay: {
+  container: {
     flex: 1,
+    backgroundColor: "#ffffff", // White background
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.3)", // Semi-transparent white overlay
+    paddingHorizontal: 20,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "#1c2833", // Dark Blue text
+    marginBottom: 30,
+  },
+  input: {
     width: "100%",
-    height: "100%",
+    height: 55,
+    backgroundColor: "#f0f0f0", // Light gray input background
+    borderWidth: 1,
+    borderColor: "#ccc", // Light gray border
+    borderRadius: 15,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    color: "#000814", // Dark text
+    fontSize: 16,
   },
-  title: { fontSize: 28,fontWeight:"bold", color: "rgb(17, 87, 51)", marginBottom: 20 },
-  input: { 
-    width: "80%", 
-    height: 50, 
-    backgroundColor: "white",
-    borderColor: "black", 
-    borderWidth: 2,
-    borderRadius: 10, 
-    paddingHorizontal: 15, 
-    marginBottom: 15, 
-    color: "black"
+  button: {
+    width: "100%",
+    backgroundColor: "#1c2833", // Dark blue button
+    padding: 15,
+    borderRadius: 15,
+    alignItems: "center",
+    marginTop: 10,
   },
-  button: { width: "80%", backgroundColor: "green", padding: 15, borderRadius: 10, alignItems: "center" },
-  buttonText: { color: "white", fontSize: 18 },
-  link: { color: "rgb(5, 50, 27)", marginTop: 15 },
+  buttonText: {
+    color: "white", // White text inside button
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  link: {
+    color: "#2e86c1", // Dark blue link
+    marginTop: 20,
+    fontSize: 14,
+  },
 });
+
