@@ -19,7 +19,7 @@ export default function RootLayout() {
           url: "/auth/check-auth",
         });
         if (response.status === 200) {
-          router.push("/home");
+          router.push("/main");
         } else {
           deleteLocalItem("userToken");
           router.push("/auth/signin");

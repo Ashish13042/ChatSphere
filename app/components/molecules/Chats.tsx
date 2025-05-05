@@ -10,6 +10,7 @@ import {
   Animated,
   Dimensions,
   Modal,
+  SafeAreaView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
@@ -23,63 +24,63 @@ const chats = [
     name: "Ashish Rawat",
     message: "Hey! How's it going?",
     time: "10:30 AM",
-    profileImage: require("../../assets/images/Profilesample.png"),
+    profileImage: require("../../../assets/images/Profilesample.png"),
   },
   {
     id: "2",
     name: "Nishant Kumar Singh",
     message: "What's up?",
     time: "9:45 AM",
-    profileImage: require("../../assets/images/Profilesample.png"),
+    profileImage: require("../../../assets/images/Profilesample.png"),
   },
   {
     id: "3",
     name: "Sahil Sharma",
     message: "Hi there",
     time: "8:15 AM",
-    profileImage: require("../../assets/images/Profilesample.png"),
+    profileImage: require("../../../assets/images/Profilesample.png"),
   },
   {
     id: "4",
     name: "Ashish Rawat",
     message: "Hey! How's it going?",
     time: "10:30 AM",
-    profileImage: require("../../assets/images/Profilesample.png"),
+    profileImage: require("../../../assets/images/Profilesample.png"),
   },
   {
     id: "5",
     name: "Nishant Kumar Singh",
     message: "What's up?",
     time: "9:45 AM",
-    profileImage: require("../../assets/images/Profilesample.png"),
+    profileImage: require("../../../assets/images/Profilesample.png"),
   },
   {
     id: "6",
     name: "Sahil Sharma",
     message: "Hi there",
     time: "8:15 AM",
-    profileImage: require("../../assets/images/Profilesample.png"),
+    profileImage: require("../../../assets/images/Profilesample.png"),
   },
   {
     id: "7",
     name: "Ashish Rawat",
     message: "Hey! How's it going?",
     time: "10:30 AM",
-    profileImage: require("../../assets/images/Profilesample.png"),
+    profileImage: require("../../../assets/images/Profilesample.png"),
   },
   {
     id: "8",
     name: "Nishant Kumar Singh",
     message: "What's up?",
     time: "9:45 AM",
-    profileImage: require("../../assets/images/Profilesample.png"),
+    profileImage: require("../../../assets/images/Profilesample.png"),
   },
   {
     id: "9",
     name: "Sahil Sharma",
     message: "Hi there",
     time: "8:15 AM",
-    profileImage: require("../../assets/images/Profilesample.png"),
+    profileImage: require("../../../assets/images/Profilesample.png"),
   },
 ];
 
@@ -107,6 +108,7 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
+      {/* Gradient Background */}
       {/* Sidebar */}
       {menuVisible && (
         <TouchableOpacity
@@ -120,14 +122,14 @@ const HomeScreen = () => {
       >
         <View style={styles.sidebarContent}>
           <Image
-            source={require("../../assets/images/logo.png")}
+            source={require("../../../assets/images/logo.png")}
             style={styles.logo}
           />
           <View style={styles.menuItems}>
             <TouchableOpacity>
               <Text style={styles.menuText}>Home</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push("./home/profile")}>
+            <TouchableOpacity onPress={() => router.push("./main/profile")}>
               <Text style={styles.menuText}>Profile</Text>
             </TouchableOpacity>
             <TouchableOpacity>
@@ -140,7 +142,7 @@ const HomeScreen = () => {
           <View style={styles.profileSection}>
             <TouchableOpacity onPress={() => setModalVisible(true)}>
               <Image
-                source={require("../../assets/images/Profilesample.png")}
+                source={require("../../../assets/images/Profilesample.png")}
                 style={styles.profilePic}
               />
             </TouchableOpacity>
@@ -155,7 +157,7 @@ const HomeScreen = () => {
                 onPress={() => setModalVisible(false)}
               >
                 <Image
-                  source={require("../../assets/images/Profilesample.png")}
+                  source={require("../../../assets/images/Profilesample.png")}
                   style={styles.modalImage}
                 />
               </TouchableOpacity>
@@ -163,17 +165,6 @@ const HomeScreen = () => {
           </Modal>
         </View>
       </Animated.View>
-
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={toggleMenu}>
-          <Ionicons name="menu" size={35} color="#3498db" />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>ChatSphere</Text>
-        <TouchableOpacity>
-          <Ionicons name="ellipsis-vertical" size={25} color="#3498db" />
-        </TouchableOpacity>
-      </View>
 
       {/* Chat List */}
       <FlatList
