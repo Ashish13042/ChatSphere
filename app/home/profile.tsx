@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TextInput, Button, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { APIURL } from '@/services/APIURL';
 
 const ProfilePage = () => {
   const [userName, setUserName] = useState('John Doe');
@@ -29,9 +30,46 @@ const ProfilePage = () => {
     }
   };
 
-  const saveChanges = () => {
-    // Save user data to backend or local storage
+  const saveChanges = async () => {
+    try {
+      if (!profilePic.uri) {
+        alert("Please select a profile picture.");
+        return;
+      }
+  
+      const formData = new FormData();
+      formData.append("profileImage", {
+        uri: profilePic.uri,
+        name: "profile.jpg",
+        type: "image/jpeg",
+      });
+  
+      // You can append text data if needed:
+      formData.append("userName", userName);
+      formData.append("userBio", userBio);
+  
+      const response = await fetch(`${APIURL}/upload/profile`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        // Note: You might need to adjust the headers based on your server's requirements
+        body: formData,
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        alert("Profile updated successfully!\nFile: " + data.filename);
+      } else {
+        alert("Upload failed: " + data.error);
+      }
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      alert("Something went wrong while saving your profile.");
+    }
   };
+  
 
   return (
     <View style={styles.container}>
